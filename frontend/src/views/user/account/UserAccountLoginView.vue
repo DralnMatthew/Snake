@@ -43,7 +43,6 @@ export default {
   },
   setup() {
     const store = useStore();
-    console.log(1, store.state.user.pulling_info);
     let username = ref("");
     let password = ref("");
     let error_message = ref("");
@@ -55,9 +54,7 @@ export default {
       store.dispatch("getinfo", {
         success() {
           router.push({ name: "home" });
-          console.log(2, store.state.user.pulling_info);
           store.commit("updatePullingInfo", false);
-          console.log(3, store.state.user.pulling_info);
         },
         error() {
           store.commit("updatePullingInfo", false);

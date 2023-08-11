@@ -40,13 +40,14 @@
             <a
               class="nav-link dropdown-toggle"
               href="#"
+              id="navbarDropdown"
               role="button"
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
               {{ $store.state.user.username }}
             </a>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
               <li>
                 <router-link
                   class="dropdown-item"
@@ -56,7 +57,7 @@
               </li>
               <li><hr class="dropdown-divider" /></li>
               <li>
-                <a class="dropdown-item" href="/" @click="logout">Logout</a>
+                <a class="dropdown-item" href="#" @click="logout">Logout</a>
               </li>
             </ul>
           </li>

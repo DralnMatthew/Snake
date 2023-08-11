@@ -26,7 +26,7 @@ const routes = [
     },
   },
   {
-    path: "/revord/",
+    path: "/record/",
     name: "record_index",
     component: RecordIndexView,
     meta: {
