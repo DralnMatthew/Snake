@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.dralnmatthew.backend.consumer.WebSocketServer;
 import com.dralnmatthew.backend.pojo.Bot;
 import com.dralnmatthew.backend.pojo.Record;
+import com.dralnmatthew.backend.pojo.User;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -24,7 +25,7 @@ public class Game extends Thread {
     private Integer nextStepB = null;
     private ReentrantLock lock = new ReentrantLock();
     private String status = "playing";  // playing -> finished
-    private String loser = "";  // all: 平局，A: A输，B: B输
+    private String loser = "";
     private final static String addBotUrl = "http://127.0.0.1:3002/bot/add/";
 
     public Game(
@@ -103,7 +104,7 @@ public class Game extends Thread {
         return false;
     }
 
-    private boolean draw() {  // 画地图
+    private boolean draw() {
         for (int i = 0; i < this.rows; i ++ ) {
             for (int j = 0; j < this.cols; j ++ ) {
                 g[i][j] = 0;
@@ -143,7 +144,7 @@ public class Game extends Thread {
         }
     }
 
-    private String getInput(Player player) {  // 将当前的局面信息，编码成字符串
+    private String getInput(Player player) {
         Player me, you;
         if (playerA.getId().equals(player.getId())) {
             me = playerA;
@@ -163,7 +164,7 @@ public class Game extends Thread {
     }
 
     private void sendBotCode(Player player) {
-        if (player.getBotId().equals(-1)) return;  // 亲自出马，不需要执行代码
+        if (player.getBotId().equals(-1)) return;
         MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
         data.add("user_id", player.getId().toString());
         data.add("bot_code", player.getBotCode());
@@ -171,7 +172,7 @@ public class Game extends Thread {
         WebSocketServer.restTemplate.postForObject(addBotUrl, data, String.class);
     }
 
-    private boolean nextStep() {  // 等待两名玩家的下一步操作
+    private boolean nextStep() {
         try {
             Thread.sleep(200);
         } catch (InterruptedException e) {
@@ -220,7 +221,7 @@ public class Game extends Thread {
         return true;
     }
 
-    private void judge() {  // 判断两名玩家下一步操作是否合法
+    private void judge() {
         List<Cell> cellsA = playerA.getCells();
         List<Cell> cellsB = playerB.getCells();
 
@@ -246,7 +247,7 @@ public class Game extends Thread {
             WebSocketServer.users.get(playerB.getId()).sendMessage(message);
     }
 
-    private void sendMove() {  // 向两个Client传递移动信息
+    private void sendMove() {
         lock.lock();
         try {
             JSONObject resp = new JSONObject();
@@ -270,7 +271,28 @@ public class Game extends Thread {
         return res.toString();
     }
 
+    private void updateUserRating(Player player, Integer rating) {
+        User user = WebSocketServer.userMapper.selectById(player.getId());
+        user.setRating(rating);
+        WebSocketServer.userMapper.updateById(user);
+    }
+
+
     private void saveToDatabase() {
+        Integer ratingA = WebSocketServer.userMapper.selectById(playerA.getId()).getRating();
+        Integer ratingB = WebSocketServer.userMapper.selectById(playerB.getId()).getRating();
+
+        if ("A".equals(loser)) {
+            ratingA -= 2;
+            ratingB += 5;
+        } else if ("B".equals(loser)) {
+            ratingA += 5;
+            ratingB -= 2;
+        }
+
+        updateUserRating(playerA, ratingA);
+        updateUserRating(playerB, ratingB);
+
         Record record = new Record(
                 null,
                 playerA.getId(),
@@ -289,7 +311,7 @@ public class Game extends Thread {
         WebSocketServer.recordMapper.insert(record);
     }
 
-    private void sendResult() {  // 向两个Client公布结果
+    private void sendResult() {
         JSONObject resp = new JSONObject();
         resp.put("event", "result");
         resp.put("loser", loser);
@@ -300,7 +322,7 @@ public class Game extends Thread {
     @Override
     public void run() {
         for (int i = 0; i < 1000; i ++ ) {
-            if (nextStep()) {  // 是否获取了两条蛇的下一步操作
+            if (nextStep()) {
                 judge();
                 if (status.equals("playing")) {
                     sendMove();

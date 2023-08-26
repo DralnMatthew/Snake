@@ -1,5 +1,6 @@
 package com.dralnmatthew.backend.service.impl.user.bot;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.dralnmatthew.backend.mapper.BotMapper;
 import com.dralnmatthew.backend.pojo.Bot;
 import com.dralnmatthew.backend.pojo.User;
@@ -34,31 +35,38 @@ public class AddServiceImpl implements AddService {
         Map<String, String> map = new HashMap<>();
 
         if (title == null || title.length() == 0) {
-            map.put("error_message", "标题不能为空");
+            map.put("error_message", "Title cannot be empty");
             return map;
         }
 
         if (title.length() > 100) {
-            map.put("error_message", "标题长度不能大于100");
+            map.put("error_message", "The length of title cannot be greater than 100");
             return map;
         }
 
         if (description == null || description.length() == 0) {
-            description = "这个用户很懒，什么也没留下~";
+            description = "...";
         }
 
         if (description.length() > 300) {
-            map.put("error_message", "Bot描述的长度不能大于300");
+            map.put("error_message", "The description of bot cannot be greater than 300");
             return map;
         }
 
         if (content == null || content.length() == 0) {
-            map.put("error_message", "代码不能为空");
+            map.put("error_message", "Content cannot be empty");
             return map;
         }
 
         if (content.length() > 10000) {
-            map.put("error_message", "代码长度不能超过10000");
+            map.put("error_message", "The length of content cannot be greater than 10000");
+            return map;
+        }
+
+        QueryWrapper<Bot> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", user.getId());
+        if (botMapper.selectCount(queryWrapper) >= 10) {
+            map.put("error_message", "Every user can only create at most 10 bots");
             return map;
         }
 

@@ -24,37 +24,37 @@ public class RegisterServiceImpl implements RegisterService {
     public Map<String, String> register(String username, String password, String confirmedPassword) {
         Map<String, String> map = new HashMap<>();
         if (username == null) {
-            map.put("error_message", "用户名不能为空");
+            map.put("error_message", "username cannot be empty");
             return map;
         }
         if (password == null || confirmedPassword == null) {
-            map.put("error_message", "密码不能为空");
+            map.put("error_message", "password cannot be empty");
             return map;
         }
 
         username = username.trim();
         if (username.length() == 0) {
-            map.put("error_message", "用户名不能为空");
+            map.put("error_message", "username cannot be empty");
             return map;
         }
 
         if (password.length() == 0 || confirmedPassword.length() == 0) {
-            map.put("error_message", "密码不能为空");
+            map.put("error_message", "password cannot be empty");
             return map;
         }
 
         if (username.length() > 100) {
-            map.put("error_message", "用户名长度不能大于100");
+            map.put("error_message", "the length of username cannot be greater than 100");
             return map;
         }
 
         if (password.length() > 100 || confirmedPassword.length() > 100) {
-            map.put("error_message", "密码长度不能大于100");
+            map.put("error_message", "the length of password cannot be greater than 100");
             return map;
         }
 
         if (!password.equals(confirmedPassword)) {
-            map.put("error_message", "两次输入的密码不一致");
+            map.put("error_message", "password unmatched");
             return map;
         }
 
@@ -62,12 +62,12 @@ public class RegisterServiceImpl implements RegisterService {
         queryWrapper.eq("username", username);
         List<User> users = userMapper.selectList(queryWrapper);
         if (!users.isEmpty()) {
-            map.put("error_message", "用户名已存在");
+            map.put("error_message", "username already exists");
             return map;
         }
 
         String encodedPassword = passwordEncoder.encode(password);
-        String photo = "https://cdn.acwing.com/media/user/profile/photo/1_lg_844c66b332.jpg";
+        String photo = "https://res.cloudinary.com/dbdezejym/image/upload/v1691787770/1_1db2488f17-anonymous_bldsqd.png";
         User user = new User(null, username, encodedPassword, photo, 1500);
         userMapper.insert(user);
 

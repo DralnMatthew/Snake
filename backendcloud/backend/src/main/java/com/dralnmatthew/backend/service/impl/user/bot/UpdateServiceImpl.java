@@ -35,43 +35,43 @@ public class UpdateServiceImpl implements UpdateService {
         Map<String, String> map = new HashMap<>();
 
         if (title == null || title.length() == 0) {
-            map.put("error_message", "标题不能为空");
+            map.put("error_message", "Title cannot be empty");
             return map;
         }
 
         if (title.length() > 100) {
-            map.put("error_message", "标题长度不能大于100");
+            map.put("error_message", "The length of title cannot be greater than 100");
             return map;
         }
 
         if (description == null || description.length() == 0) {
-            description = "这个用户很懒，什么也没留下~";
+            description = "...";
         }
 
         if (description.length() > 300) {
-            map.put("error_message", "Bot描述的长度不能大于300");
+            map.put("error_message", "The description of bot cannot be greater than 300");
             return map;
         }
 
         if (content == null || content.length() == 0) {
-            map.put("error_message", "代码不能为空");
+            map.put("error_message", "Content cannot be empty");
             return map;
         }
 
         if (content.length() > 10000) {
-            map.put("error_message", "代码长度不能超过10000");
+            map.put("error_message", "The length of content cannot be greater than 10000");
             return map;
         }
 
         Bot bot = botMapper.selectById(bot_id);
 
         if (bot == null) {
-            map.put("error_message", "Bot不存在或已被删除");
+            map.put("error_message", "Bot does not exist");
             return map;
         }
 
         if (!bot.getUserId().equals(user.getId())) {
-            map.put("error_message", "没有权限修改该Bot");
+            map.put("error_message", "No right to modify this Bot");
             return map;
         }
 
