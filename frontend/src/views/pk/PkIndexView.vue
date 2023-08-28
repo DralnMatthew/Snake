@@ -18,7 +18,7 @@
       parseInt($store.state.user.id) === parseInt($store.state.pk.b_id)
     "
   >
-    You are on the Top Left Corner
+    You are on the Top Right Corner
   </div>
 </template>
 
@@ -37,7 +37,7 @@ export default {
   },
   setup() {
     const store = useStore();
-    const socketUrl = `ws://127.0.0.1:3000/websocket/${store.state.user.token}/`;
+    const socketUrl = `ws://35.228.224.194:3000/websocket/${store.state.user.token}/`;
 
     store.commit("updateLoser", "none");
     store.commit("updateIsRecord", false);

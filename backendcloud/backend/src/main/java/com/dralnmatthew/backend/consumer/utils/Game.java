@@ -26,7 +26,7 @@ public class Game extends Thread {
     private ReentrantLock lock = new ReentrantLock();
     private String status = "playing";  // playing -> finished
     private String loser = "";
-    private final static String addBotUrl = "http://127.0.0.1:3002/bot/add/";
+    private final static String addBotUrl = "http://35.228.224.194:3002/bot/add/";
 
     public Game(
             Integer rows,
